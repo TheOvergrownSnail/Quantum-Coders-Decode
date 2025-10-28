@@ -1,34 +1,50 @@
+//Commenting is used by adding // to the start of a line.
+/* For comments that you want to last longer than one line.
+*add aterisks to every line
+*
+*
+*
+* At the end use */
 
+//This tells the code where it should be found on android studio
 package org.firstinspires.ftc.teamcode;
 
-import android.view.animation.GridLayoutAnimationController;
-
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
+/*This is importing everything that is used for ftc because android studio is
+an app making studio
+*/
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-
-public abstract class QuantumCodersAutonomous extends OpMode
-{
-    DcMotor motorLeft;
-    DcMotor motorRight;
-    DcMotor frontLeft;
-    DcMotor frontRight;
-    ColorSensor color1;
-    DistanceSensor distance1;
 
 
+//This defines what this will be called on the Driver Hub
+@TeleOp(name="QuantumCodersAutonomous", group="StarterBot")
+public class QuantumCodersAutonomous extends LinearOpMode {
 
-    public void runOpMode() throws InterruptedException {
 
-        color1 = hardwareMap.get(ColorSensor.class, "color1");
-        distance1 = hardwareMap.get(DistanceSensor.class, "distance1");
-        BNO055IMU imu = hardwareMap.get(BNO055IMU.class, "imu");
-        motorLeft.setDirection(DcMotor.Direction.REVERSE);
-        motorRight.setDirection(DcMotor.Direction.FORWARD);
-        Thread.sleep(500);
+    private DcMotor leftDrive = null;
+    private DcMotor rightDrive = null;
+
+    //This is overriding the code that is normally here
+    @Override
+    public void runOpMode() {
+
+        //These are connecting the idea of "motor" in the code to the motors on the bot
+        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
+        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+
+        //These are being reversed because the drive motors start reversed
+        rightDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftDrive.setDirection(DcMotor.Direction.FORWARD);
+
+//This tells the code to wait for you to start on the Driver hub
+        waitForStart();
+
+        //This is lowering the power so it doesn't get way to fast
+        leftDrive.setPower(0.5);
+        rightDrive.setPower(0.5);
+
+
+
     }
-
 }
