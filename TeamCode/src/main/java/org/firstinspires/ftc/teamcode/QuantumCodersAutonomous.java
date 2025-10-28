@@ -1,10 +1,10 @@
 //Commenting is used by adding // to the start of a line.
 /* For comments that you want to last longer than one line.
-*add aterisks to every line
-*
-*
-*
-* At the end use */
+ *add aterisks to every line
+ *
+ *
+ *
+ * At the end use */
 
 //This tells the code where it should be found on android studio
 package org.firstinspires.ftc.teamcode;
@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 
 //This defines what this will be called on the Driver Hub
+
 @Autonomous(name="QuantumCodersAutonomous", group="StarterBot")
 public class QuantumCodersAutonomous extends LinearOpMode {
 
@@ -31,7 +32,7 @@ public class QuantumCodersAutonomous extends LinearOpMode {
     public void runOpMode() {
 
         //These are connecting the idea of "motor" in the code to the motors on the bot
-        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
+        leftDrive = hardwareMap.get(DcMotor.class, "left_drive");
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
 
         //These are being reversed because the drive motors start reversed
@@ -44,7 +45,10 @@ public class QuantumCodersAutonomous extends LinearOpMode {
         //This is lowering the power so it doesn't get way to fast
         leftDrive.setPower(0.5);
         rightDrive.setPower(0.5);
+        sleep(500);
 
+        leftDrive.setPower((0));
+        rightDrive.setPower((0));
 
 
     }
