@@ -12,13 +12,14 @@ package org.firstinspires.ftc.teamcode;
 /*This is importing everything that is used for ftc because android studio is
 an app making studio
 */
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 
 //This defines what this will be called on the Driver Hub
-@TeleOp(name="QuantumCodersAutonomous", group="StarterBot")
+@Autonomous(name="QuantumCodersAutonomous", group="StarterBot")
 public class QuantumCodersAutonomous extends LinearOpMode {
 
 
