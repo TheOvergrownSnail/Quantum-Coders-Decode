@@ -38,6 +38,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -59,7 +61,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @TeleOp(name = "GoBildaKitBotTeleop", group = "StarterBot")
-//@Disabled
+
 public class GoBildaKitBotTeleop extends OpMode {
     final double FEED_TIME_SECONDS = 0.20; //The feeder servos run this long when a shot is requested.
     final double STOP_SPEED = 0.0; //We send this power to the servos when we want them to stop.
@@ -71,16 +73,18 @@ public class GoBildaKitBotTeleop extends OpMode {
      * velocity. Here we are setting the target, and minimum velocity that the launcher should run
      * at. The minimum velocity is a threshold for determining when to fire.
      */
-    final double LAUNCHER_TARGET_VELOCITY = 1125;
-    final double LAUNCHER_MIN_VELOCITY = 1075;
+    final double LAUNCHER_TARGET_VELOCITY = 1800;
+    final double LAUNCHER_MIN_VELOCITY = 1600;
 
     // Declare OpMode members.
-    private DcMotor leftDrive = null;
-    private DcMotor rightDrive = null;
+    private ElapsedTime runtime = new ElapsedTime();
+    private DcMotor frontLeftDrive = null;
+    private DcMotor backLeftDrive = null;
+    private DcMotor frontRightDrive = null;
+    private DcMotor backRightDrive = null;
     private DcMotorEx launcher = null;
     private CRServo leftFeeder = null;
     private CRServo rightFeeder = null;
-
     ElapsedTime feederTimer = new ElapsedTime();
 
     /*
@@ -124,12 +128,13 @@ public class GoBildaKitBotTeleop extends OpMode {
          * to 'get' must correspond to the names assigned during the robot configuration
          * step.
          */
-        leftDrive = hardwareMap.get(DcMotor.class, "left_drive");
-        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
+        frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
+        backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
         launcher = hardwareMap.get(DcMotorEx.class, "launcher");
         leftFeeder = hardwareMap.get(CRServo.class, "left_feeder");
         rightFeeder = hardwareMap.get(CRServo.class, "right_feeder");
-
+        frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
         /*
          * To drive forward, most robots need the motor on one side to be reversed,
          * because the axles point in opposite directions. Pushing the left stick forward
@@ -137,8 +142,10 @@ public class GoBildaKitBotTeleop extends OpMode {
          * Note: The settings here assume direct drive on left and right wheels. Gear
          * Reduction or 90 Deg drives may require direction flips
          */
-        leftDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightDrive.setDirection(DcMotor.Direction.FORWARD);
+        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
+        backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
         /*
          * Here we set our launcher to the RUN_USING_ENCODER runmode.
@@ -154,8 +161,10 @@ public class GoBildaKitBotTeleop extends OpMode {
          * slow down much faster when it is coasting. This creates a much more controllable
          * drivetrain. As the robot stops much quicker.
          */
-        leftDrive.setZeroPowerBehavior(BRAKE);
-        rightDrive.setZeroPowerBehavior(BRAKE);
+        frontLeftDrive.setZeroPowerBehavior(BRAKE);
+        frontRightDrive.setZeroPowerBehavior(BRAKE);
+        backLeftDrive.setZeroPowerBehavior(BRAKE);
+        backRightDrive.setZeroPowerBehavior(BRAKE);
         launcher.setZeroPowerBehavior(BRAKE);
 
         /*
@@ -176,6 +185,8 @@ public class GoBildaKitBotTeleop extends OpMode {
          * Tell the driver that initialization is complete.
          */
         telemetry.addData("Status", "Initialized");
+        telemetry.update();
+        runtime.reset();
     }
 
     /*
@@ -183,7 +194,9 @@ public class GoBildaKitBotTeleop extends OpMode {
      */
     @Override
     public void init_loop() {
+
     }
+
 
     /*
      * Code to run ONCE when the driver hits START
@@ -206,13 +219,14 @@ public class GoBildaKitBotTeleop extends OpMode {
          * both motors work to rotate the robot. Combinations of these inputs can be used to create
          * more complex maneuvers.
          */
-        arcadeDrive(-gamepad1.left_stick_y, gamepad1.right_stick_x);
+
+        arcadeDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
         /*
          * Here we give the user control of the speed of the launcher motor without automatically
          * queuing a shot.
          */
-        if (gamepad2.y) {
+        if (gamepad2.y) {//This is bound to a second controller now
             launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
         } else if (gamepad2.b) { // stop flywheel
             launcher.setVelocity(STOP_SPEED);
@@ -239,15 +253,38 @@ public class GoBildaKitBotTeleop extends OpMode {
     public void stop() {
     }
 
-    void arcadeDrive(double forward, double rotate) {
-        leftPower = forward + rotate;
-        rightPower = forward - rotate;
+    void arcadeDrive(double axial, double lateral, double yaw) {
+        double max;
 
-        /*
-         * Send calculated power to wheels
-         */
-        leftDrive.setPower(0.55*leftPower);
-        rightDrive.setPower(0.55*rightPower);
+
+        double frontLeftPower  = axial + lateral + yaw;
+        double frontRightPower = axial - lateral - yaw;
+        double backLeftPower   = axial - lateral + yaw;
+        double backRightPower  = axial + lateral - yaw;
+
+        max = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
+        max = Math.max(max, Math.abs(backLeftPower));
+        max = Math.max(max, Math.abs(backRightPower));
+
+        if (max > 1.0) {
+            frontLeftPower  /= max;
+            frontRightPower /= max;
+            backLeftPower   /= max;
+            backRightPower  /= max;
+        }
+
+
+        // Send calculated power to wheels
+        frontLeftDrive.setPower(frontLeftPower);
+        frontRightDrive.setPower(frontRightPower);
+        backLeftDrive.setPower(backLeftPower);
+        backRightDrive.setPower(backRightPower);
+
+        // Show the elapsed game time and wheel power.
+        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.addData("Front left/Right", "%4.2f, %4.2f", frontLeftPower, frontRightPower);
+        telemetry.addData("Back  left/Right", "%4.2f, %4.2f", backLeftPower, backRightPower);
+        telemetry.update();
     }
 
     void launch(boolean shotRequested) {
