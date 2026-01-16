@@ -148,7 +148,7 @@ public class GoBildaKitBotTeleop extends OpMode {
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
         /*
-         * Here we set our launcher to the RUN_USING_ENCODER runmode.
+         * Here we set our launcher to the RUN_USING_ENCODER runmode.1
          * If you notice that you have no control over the velocity of the motor, it just jumps
          * right to a number much higher than your set point, make sure that your encoders are plugged
          * into the port right beside the motor itself. And that the motors polarity is consistent
