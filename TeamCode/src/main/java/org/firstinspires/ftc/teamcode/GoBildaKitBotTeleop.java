@@ -73,8 +73,8 @@ public class GoBildaKitBotTeleop extends OpMode {
      * velocity. Here we are setting the target, and minimum velocity that the launcher should run
      * at. The minimum velocity is a threshold for determining when to fire.
      */
-    final double LAUNCHER_TARGET_VELOCITY = 1800;
-    final double LAUNCHER_MIN_VELOCITY = 1600;
+    final double LAUNCHER_TARGET_VELOCITY = 1600;
+    final double LAUNCHER_MIN_VELOCITY = 1400;
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -144,7 +144,7 @@ public class GoBildaKitBotTeleop extends OpMode {
          */
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
+        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
         /*
@@ -155,6 +155,7 @@ public class GoBildaKitBotTeleop extends OpMode {
          * through any wiring.
          */
         launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300,5,10,25));
 
         /*
          * Setting zeroPowerBehavior to BRAKE enables a "brake mode". This causes the motor to
