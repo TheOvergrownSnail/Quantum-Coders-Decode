@@ -27,8 +27,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class QuantumCodersAutonomous extends LinearOpMode {
 
 
-    private DcMotor leftDrive = null;
-    private DcMotor rightDrive = null;
+    private DcMotor frontLeftDrive = null;
+    private DcMotor backLeftDrive = null;
+    private DcMotor frontRightDrive = null;
+    private DcMotor backRightDrive = null;
     private DcMotorEx launcher = null;
     private CRServo leftFeeder = null;
     private CRServo rightFeeder = null;
@@ -40,8 +42,10 @@ public class QuantumCodersAutonomous extends LinearOpMode {
     public void runOpMode() {
 
         //These are connecting the idea of "motor" in the code to the motors on the bot
-        leftDrive = hardwareMap.get(DcMotor.class, "left_drive");
-        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
+        frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
+        backLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
+        frontRightDrive = hardwareMap.get(DcMotor.class, "front_right_drive");
         launcher = hardwareMap.get(DcMotorEx.class,"launcher");
         leftFeeder = hardwareMap.get(CRServo.class, "left_feeder");
         rightFeeder = hardwareMap.get(CRServo.class, "right_feeder");
@@ -51,8 +55,10 @@ public class QuantumCodersAutonomous extends LinearOpMode {
         final double FEED_TIME = 0.20;
 
         //These are being reversed because the drive motors start reversed
-        rightDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftDrive.setDirection(DcMotor.Direction.FORWARD);
+        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
+        frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
+        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
+        backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
 
         final double LAUNCHER_TARGET_VELOCITY = 1125;
         final double LAUNCHER_MIN_VELOCITY = 1075;
@@ -71,16 +77,16 @@ public class QuantumCodersAutonomous extends LinearOpMode {
         rightFeeder.setPower(-50);
         sleep(2000);
 
-        /*This is lowering the power so it doesn't get way too fast
-        leftDrive.setPower(0.5);
-        rightDrive.setPower(0.5);
+        //This is lowering the power so it doesn't get way too fast
+        frontRightDrive.setPower(0.5);
+        frontLeftDrive.setPower(0.5);
+        backRightDrive.setPower(0.5);
+        backLeftDrive.setPower(0.5);
         sleep(3000);
 
-        leftDrive.setPower(0);
-        rightDrive.setPower(0);
-
-
-
-        launcher.setPower(1);*/
+        frontRightDrive.setPower(0);
+        frontLeftDrive.setPower(0);
+        backRightDrive.setPower(0);
+        launcher.setPower(0);
     }
 }
