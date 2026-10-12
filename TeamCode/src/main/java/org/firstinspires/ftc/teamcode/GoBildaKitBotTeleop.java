@@ -159,7 +159,7 @@ public class GoBildaKitBotTeleop extends OpMode {
          * through any wiring.
          */
         launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 20, 10, 25));
+        launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(20, 5, 2, 12));
 
         /*
          * Setting zeroPowerBehavior to BRAKE enables a "brake mode". This causes the motor to
@@ -178,7 +178,6 @@ public class GoBildaKitBotTeleop extends OpMode {
         leftFeeder.setPower(STOP_SPEED);
         rightFeeder.setPower(STOP_SPEED);
 
-        launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 0, 0, 10));
 
         /*
          * Much like our drivetrain motors, we set the left feeder servo to reverse so that they
@@ -241,7 +240,7 @@ public class GoBildaKitBotTeleop extends OpMode {
         if (gamepad2.aWasPressed()) {
             LAUNCHER_ADD_VELOCITY -= 100;// Decrease speed setting by 100
         }
-        LAUNCHER_TARGET_VELOCITY = gamepad2.left_stick_y + LAUNCHER_ADD_VELOCITY;
+        LAUNCHER_TARGET_VELOCITY = -gamepad2.left_stick_y*100 + LAUNCHER_ADD_VELOCITY;
         /*
         The statement above defines the target velocity the Statement below Creates a range
         to be able to determine what the min velocity should be.
