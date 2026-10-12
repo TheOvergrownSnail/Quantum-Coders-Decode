@@ -159,7 +159,7 @@ public class GoBildaKitBotTeleop extends OpMode {
          * through any wiring.
          */
         launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 5, 10, 25));
+        launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 20, 10, 25));
 
         /*
          * Setting zeroPowerBehavior to BRAKE enables a "brake mode". This causes the motor to
@@ -235,10 +235,10 @@ public class GoBildaKitBotTeleop extends OpMode {
         backRightDrive.setPower(rightPower);
 
         // 3. PLACE ADJUSTMENT CONTROLS HERE: Increments/decrements thresholds when pressed
-        if (gamepad2.aWasPressed()) {
+        if (gamepad2.yWasPressed()) {
             LAUNCHER_ADD_VELOCITY += 100;// Increase speed setting by 100
         }
-        if (gamepad2.bWasPressed()) {
+        if (gamepad2.aWasPressed()) {
             LAUNCHER_ADD_VELOCITY -= 100;// Decrease speed setting by 100
         }
         LAUNCHER_TARGET_VELOCITY = gamepad2.left_stick_y + LAUNCHER_ADD_VELOCITY;
@@ -248,9 +248,9 @@ public class GoBildaKitBotTeleop extends OpMode {
          */
         if (LAUNCHER_TARGET_VELOCITY < LAUNCHER_MIN_MINUS && LAUNCHER_TARGET_VELOCITY > -LAUNCHER_MIN_MINUS) {
             LAUNCHER_MIN_VELOCITY = 0;
-        } else if (LAUNCHER_TARGET_VELOCITY > LAUNCHER_MIN_MINUS) {
+        } else if (LAUNCHER_TARGET_VELOCITY >= LAUNCHER_MIN_MINUS) {
             LAUNCHER_MIN_VELOCITY = LAUNCHER_TARGET_VELOCITY - LAUNCHER_MIN_MINUS;
-        } else if (LAUNCHER_TARGET_VELOCITY < -LAUNCHER_MIN_MINUS) {
+        } else if (LAUNCHER_TARGET_VELOCITY <= -LAUNCHER_MIN_MINUS) {
             LAUNCHER_MIN_VELOCITY = LAUNCHER_TARGET_VELOCITY + LAUNCHER_MIN_MINUS;
         } else {
             telemetry.addLine("Error_1");
@@ -261,7 +261,7 @@ public class GoBildaKitBotTeleop extends OpMode {
         //lastDpadDown = gamepad1.dpad_down;
 
         // Firing buttons
-        launch(gamepad1.right_bumper, gamepad1.left_bumper);
+        launch(gamepad2.right_bumper, gamepad2.left_bumper);
 
         // 4. PLACE TELEMETRY UPDATES HERE: View settings live on your Driver Station/ya
         telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -307,7 +307,6 @@ public class GoBildaKitBotTeleop extends OpMode {
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", frontLeftPower, frontRightPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", backLeftPower, backRightPower);
-        telemetry.update();
     }
     /*
      * Launcher State Machine Logic
@@ -326,7 +325,7 @@ public class GoBildaKitBotTeleop extends OpMode {
                 launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
 //                update = 1 + update; //testing updates
 
-                if (launcher.getVelocity() > LAUNCHER_MIN_VELOCITY) {
+                if (launcher.getVelocity() > LAUNCHER_MIN_VELOCITY && shotRequested) {
                     launchState = LaunchState.LAUNCH;
                 }
                 if (shotCancel) {
